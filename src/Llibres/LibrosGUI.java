@@ -1,108 +1,206 @@
 package Llibres;
 
-import Connexio.Connexio;
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import Usuaris.Usuari;
+import Connexio.Connexio;
 
 public class LibrosGUI extends JFrame {
-    private JTextField tituloField, autorField, isbnField, editorialField, anyPublicacioField, categoriaField, estatField;
-    private JButton agregarButton, modificarButton, eliminarButton;
+    private Usuari usuari;
+    private JTable table;
+    private DefaultTableModel tableModel;
 
-    public LibrosGUI() {
-        setTitle("Gestión de Libros");
-        setSize(400, 300);
+    public LibrosGUI(Usuari usuari) {
+        this.usuari = usuari;
+
+        setTitle("Gestió de Llibres");
+        setSize(1024, 768);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(9, 2));
+        setResizable(false);
 
-        // Crear y añadir componentes
-        add(new JLabel("Título:"));
-        tituloField = new JTextField();
-        add(tituloField);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
 
-        add(new JLabel("Autor:"));
-        autorField = new JTextField();
-        add(autorField);
+        // Panell superior amb informació de l'usuari i el nom de la biblioteca
+        JPanel topPanel = new JPanel(new BorderLayout());
+        JLabel lblUsuari = new JLabel("Usuari: " + usuari.getNom() + " " + usuari.getCognoms());
+        JLabel lblBiblioteca = new JLabel("Biblioteca: Can Casacuberta", JLabel.RIGHT);
+        topPanel.add(lblUsuari, BorderLayout.WEST);
+        topPanel.add(lblBiblioteca, BorderLayout.EAST);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.add(topPanel, BorderLayout.NORTH);
 
-        add(new JLabel("ISBN:"));
-        isbnField = new JTextField();
-        add(isbnField);
-
-        add(new JLabel("Editorial:"));
-        editorialField = new JTextField();
-        add(editorialField);
-
-        add(new JLabel("Año de Publicación:"));
-        anyPublicacioField = new JTextField();
-        add(anyPublicacioField);
-
-        add(new JLabel("Categoría:"));
-        categoriaField = new JTextField();
-        add(categoriaField);
-
-        add(new JLabel("Estado:"));
-        estatField = new JTextField();
-        add(estatField);
-
-        agregarButton = new JButton("Agregar Libro");
-        agregarButton.addActionListener(new ActionListener() {
+        // Botó per afegir un nou llibre
+        JButton btnAddBook = new JButton("Afegir Nou Llibre");
+        btnAddBook.setPreferredSize(new Dimension(1024, 30));
+        btnAddBook.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                agregarLibro();
+                // TODO: Implementar funcionalitat per afegir un nou llibre
+                System.out.println("Afegir Nou Llibre...");
             }
         });
-        add(agregarButton);
+        panel.add(btnAddBook, BorderLayout.NORTH);
 
-        modificarButton = new JButton("Modificar Libro");
-        modificarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                modificarLibro();
+        // Crear la taula per llistar els llibres
+        tableModel = new DefaultTableModel(new Object[]{"ID", "Títol", "ISBN", "Modificar", "Eliminar"}, 0);
+        table = new JTable(tableModel) {
+            public boolean isCellEditable(int row, int column) {
+                return column == 3 || column == 4; // Només les columnes de Modificar i Eliminar són editables
             }
-        });
-        add(modificarButton);
+        };
+        table.setRowHeight(30);
+        table.getColumnModel().getColumn(0).setPreferredWidth(50); // ID
+        table.getColumnModel().getColumn(1).setPreferredWidth(300); // Títol
+        table.getColumnModel().getColumn(2).setPreferredWidth(150); // ISBN
+        table.getColumnModel().getColumn(3).setPreferredWidth(100); // Modificar
+        table.getColumnModel().getColumn(4).setPreferredWidth(100); // Eliminar
 
-        eliminarButton = new JButton("Eliminar Libro");
-        eliminarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                eliminarLibro();
-            }
-        });
-        add(eliminarButton);
+        // Omplir la taula amb dades de la base de dades
+        omplirTaulaLlibres();
+
+        // Afegir scroll a la taula
+        JScrollPane scrollPane = new JScrollPane(table);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        add(panel);
+        setVisible(true);
     }
 
-    private void agregarLibro() {
-        try (Connection connection = Connexio.getConnection()) {
-            String query = "INSERT INTO Llibres (Títol, Autor, ISBN, Editorial, Any_Publicació, Categoria, Estat) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, tituloField.getText());
-                statement.setString(2, autorField.getText());
-                statement.setString(3, isbnField.getText());
-                statement.setString(4, editorialField.getText());
-                statement.setInt(5, Integer.parseInt(anyPublicacioField.getText()));
-                statement.setString(6, categoriaField.getText());
-                statement.setString(7, estatField.getText());
-                statement.executeUpdate();
-                JOptionPane.showMessageDialog(this, "Libro agregado exitosamente.");
+    private void omplirTaulaLlibres() {
+        List<Llibre> llibres = obtenirLlibresDeLaBaseDeDades();
+        for (Llibre llibre : llibres) {
+            tableModel.addRow(new Object[]{llibre.getId(), llibre.getTitol(), llibre.getIsbn(), "Modificar", "Eliminar"});
+        }
+
+        // Afegir funcionalitats als botons de la taula
+        table.getColumn("Modificar").setCellRenderer(new ButtonRenderer());
+        table.getColumn("Modificar").setCellEditor(new ButtonEditor(new JCheckBox()));
+        table.getColumn("Eliminar").setCellRenderer(new ButtonRenderer());
+        table.getColumn("Eliminar").setCellEditor(new ButtonEditor(new JCheckBox()));
+    }
+
+    private List<Llibre> obtenirLlibresDeLaBaseDeDades() {
+        List<Llibre> llibres = new ArrayList<>();
+        try (Connection connection = Connexio.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Llibres");
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Llibre llibre = new Llibre(
+                        resultSet.getInt("ID_Llibre"),
+                        resultSet.getString("Títol"),
+                        resultSet.getString("Autor"),
+                        resultSet.getString("ISBN"),
+                        resultSet.getString("Editorial"),
+                        resultSet.getInt("Any_Publicació"),
+                        resultSet.getString("Categoria"),
+                        resultSet.getString("Estat")
+                );
+                llibres.add(llibre);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al agregar el libro.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return llibres;
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText((value == null) ? "" : value.toString());
+            return this;
         }
     }
 
-    private void modificarLibro() {
-        // Similar implementación a agregarLibro() pero con UPDATE en vez de INSERT
-    }
+    class ButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private String label;
+        private boolean isPushed;
 
-    private void eliminarLibro() {
-        // Similar implementación a agregarLibro() pero con DELETE en vez de INSERT
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    fireEditingStopped();
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            label = (value == null) ? "" : value.toString();
+            button.setText(label);
+            isPushed = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (isPushed) {
+                int selectedRow = table.getSelectedRow();
+                int llibreId = (int) tableModel.getValueAt(selectedRow, 0);
+                String llibreTitol = (String) tableModel.getValueAt(selectedRow, 1);
+
+                if (label.equals("Modificar")) {
+                    System.out.println("Modificar llibre amb ID " + llibreId);
+                    // TODO: Implementar funcionalitat per modificar el llibre
+                } else if (label.equals("Eliminar")) {
+                    int confirm = JOptionPane.showConfirmDialog(null,
+                            "Estas segur en eliminar el llibre " + llibreTitol + "?",
+                            "Confirmar eliminació",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        System.out.println("Eliminar llibre amb ID " + llibreId);
+                        // Eliminar la fila seleccionada de la base de dades i de la taula
+                        eliminarLlibreDeLaBaseDeDades(llibreId);
+                        tableModel.removeRow(selectedRow);
+                    }
+                }
+            }
+            isPushed = false;
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+
+        @Override
+        protected void fireEditingStopped() {
+            super.fireEditingStopped();
+        }
+
+        private void eliminarLlibreDeLaBaseDeDades(int llibreId) {
+            try (Connection connection = Connexio.getConnection();
+                 PreparedStatement statement = connection.prepareStatement("DELETE FROM Llibres WHERE ID_Llibre = ?")) {
+                statement.setInt(1, llibreId);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
