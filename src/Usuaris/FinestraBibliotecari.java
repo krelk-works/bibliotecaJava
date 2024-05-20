@@ -49,9 +49,6 @@ public class FinestraBibliotecari extends JFrame {
         // Afegim la funcionalitat del botó de Gestió de Préstecs
         btnGestioPrestecs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO -> Implementar i probar la funció de la gestió de préstecs...
-                System.out.println("Obrint gestió de préstecs...");
-                //new PrestamosGUI().setVisible(true);
                 new PrestecsGUI();
             }
         });

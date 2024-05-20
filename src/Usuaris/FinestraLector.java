@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import Llibres.ConsultaLlibres;
+import Prestecs.ConsultaPrestecs;
 
 public class FinestraLector extends JFrame {
     @SuppressWarnings("unused")
@@ -37,13 +39,14 @@ public class FinestraLector extends JFrame {
         btnBuscarLlibres.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Buscar llibres disponibles");
+                new ConsultaLlibres();
             }
         });
         JButton btnConsultarPrestecs = new JButton("Consultar els meus préstecs");
         // Afegim la funcionalitat del botó de Consultar Préstecs
         btnConsultarPrestecs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Consultar els meus préstecs");
+                new ConsultaPrestecs(usuari);
             }
         });
         centerPanel.add(btnBuscarLlibres);
