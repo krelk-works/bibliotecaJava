@@ -10,6 +10,8 @@ public class Usuari {
     private String telefon;
     private String rol;
     private Date dataRegistre;
+    @SuppressWarnings("unused")
+    private String contrasenya;
     
     // Constructor necessari per a fer operacions a la base de dades amb usuaris
     public Usuari(int id, String nom, String cognoms, String email, String telefon, String rol, Date dataRegistre) {
@@ -30,6 +32,28 @@ public class Usuari {
         this.telefon = telefon;
         this.rol = rol;
         this.dataRegistre = dataRegistre;
+    }
+
+    // Constructor necesari per afegir un nou usuari a la base de dades, per exemple amb contrasenya
+    public Usuari(String nom, String cognoms, String email, String telefon, String rol, Date dataRegistre, String contrasenya) {
+        this.nom = nom;
+        this.cognoms = cognoms;
+        this.email = email;
+        this.telefon = telefon;
+        this.rol = rol;
+        this.dataRegistre = dataRegistre;
+        this.contrasenya = contrasenya;
+    }
+
+    // Constructor necesari per afegir un nou usuari a la base de dades, per exemple amb contrasenya i ID
+    public Usuari(int id, String nom, String cognoms, String email, String telefon, String rol, Date dataRegistre, String contrasenya) {
+        this.nom = nom;
+        this.cognoms = cognoms;
+        this.email = email;
+        this.telefon = telefon;
+        this.rol = rol;
+        this.dataRegistre = dataRegistre;
+        this.contrasenya = contrasenya;
     }
 
     public int getId() {

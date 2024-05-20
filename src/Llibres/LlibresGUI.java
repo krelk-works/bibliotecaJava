@@ -3,7 +3,6 @@ package Llibres;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,14 +16,12 @@ import java.util.List;
 import Usuaris.Usuari;
 import Connexio.Connexio;
 
-public class LibrosGUI extends JFrame {
-    private Usuari usuari;
+@SuppressWarnings("unused")
+public class LlibresGUI extends JFrame {
     private JTable table;
     private DefaultTableModel tableModel;
 
-    public LibrosGUI(Usuari usuari) {
-        this.usuari = usuari;
-
+    public LlibresGUI() {
         setTitle("Gestió de Llibres");
         setSize(1024, 768);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -34,23 +31,13 @@ public class LibrosGUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
-        // Panell superior amb informació de l'usuari i el nom de la biblioteca
-        JPanel topPanel = new JPanel(new BorderLayout());
-        JLabel lblUsuari = new JLabel("Usuari: " + usuari.getNom() + " " + usuari.getCognoms());
-        JLabel lblBiblioteca = new JLabel("Biblioteca: Can Casacuberta", JLabel.RIGHT);
-        topPanel.add(lblUsuari, BorderLayout.WEST);
-        topPanel.add(lblBiblioteca, BorderLayout.EAST);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.add(topPanel, BorderLayout.NORTH);
-
         // Botó per afegir un nou llibre
         JButton btnAddBook = new JButton("Afegir Nou Llibre");
         btnAddBook.setPreferredSize(new Dimension(1024, 30));
         btnAddBook.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Implementar funcionalitat per afegir un nou llibre
-                System.out.println("Afegir Nou Llibre...");
+                new AfegirLlibre(LlibresGUI.this).setVisible(true);
             }
         });
         panel.add(btnAddBook, BorderLayout.NORTH);
@@ -81,6 +68,7 @@ public class LibrosGUI extends JFrame {
     }
 
     private void omplirTaulaLlibres() {
+        tableModel.setRowCount(0); // Esborrar les files existents
         List<Llibre> llibres = obtenirLlibresDeLaBaseDeDades();
         for (Llibre llibre : llibres) {
             tableModel.addRow(new Object[]{llibre.getId(), llibre.getTitol(), llibre.getIsbn(), "Modificar", "Eliminar"});
@@ -93,10 +81,14 @@ public class LibrosGUI extends JFrame {
         table.getColumn("Eliminar").setCellEditor(new ButtonEditor(new JCheckBox()));
     }
 
+    public void actualitzarTaulaLlibres() {
+        omplirTaulaLlibres();
+    }
+
     private List<Llibre> obtenirLlibresDeLaBaseDeDades() {
         List<Llibre> llibres = new ArrayList<>();
         try (Connection connection = Connexio.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Llibres");
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Llibres ORDER BY Títol ASC");
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -118,11 +110,13 @@ public class LibrosGUI extends JFrame {
         return llibres;
     }
 
+    // Classe per renderitzar els botons a la taula
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
-            setOpaque(true);
+            setOpaque(true); // Assegura que el botó sigui opac
         }
 
+        // Configura l'aparença del botó en funció de les dades de la cel·la
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             setText((value == null) ? "" : value.toString());
@@ -130,11 +124,13 @@ public class LibrosGUI extends JFrame {
         }
     }
 
+    // Classe per editar les cel·les de la taula que contenen botons
     class ButtonEditor extends DefaultCellEditor {
         protected JButton button;
         private String label;
         private boolean isPushed;
 
+        // Inicialitza el botó i configura l'acció d'escolta
         public ButtonEditor(JCheckBox checkBox) {
             super(checkBox);
             button = new JButton();
@@ -146,6 +142,7 @@ public class LibrosGUI extends JFrame {
             });
         }
 
+        // Retorna el component editor per a la cel·la
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             label = (value == null) ? "" : value.toString();
@@ -154,27 +151,41 @@ public class LibrosGUI extends JFrame {
             return button;
         }
 
+        // Retorna el valor de l'editor
         @Override
         public Object getCellEditorValue() {
             if (isPushed) {
-                int selectedRow = table.getSelectedRow();
-                int llibreId = (int) tableModel.getValueAt(selectedRow, 0);
-                String llibreTitol = (String) tableModel.getValueAt(selectedRow, 1);
+                final int selectedRow = table.getSelectedRow();
+                if (selectedRow < 0 || selectedRow >= tableModel.getRowCount()) {
+                    isPushed = false;
+                    return label;
+                }
+
+                final int llibreId = (int) tableModel.getValueAt(selectedRow, 0);
+                final String llibreTitol = (String) tableModel.getValueAt(selectedRow, 1);
 
                 if (label.equals("Modificar")) {
-                    System.out.println("Modificar llibre amb ID " + llibreId);
-                    // TODO: Implementar funcionalitat per modificar el llibre
+                    // Si es fa clic a "Modificar", obrim la finestra EditarLlibre
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            new EditarLlibre(LlibresGUI.this, llibreId).setVisible(true);
+                        }
+                    });
                 } else if (label.equals("Eliminar")) {
+                    // Si es fa clic a "Eliminar", mostrem un diàleg de confirmació
                     int confirm = JOptionPane.showConfirmDialog(null,
                             "Estas segur en eliminar el llibre " + llibreTitol + "?",
                             "Confirmar eliminació",
                             JOptionPane.YES_NO_OPTION);
 
                     if (confirm == JOptionPane.YES_OPTION) {
-                        System.out.println("Eliminar llibre amb ID " + llibreId);
-                        // Eliminar la fila seleccionada de la base de dades i de la taula
-                        eliminarLlibreDeLaBaseDeDades(llibreId);
-                        tableModel.removeRow(selectedRow);
+                        // Si es confirma l'eliminació, eliminem el llibre de la base de dades i de la taula
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                eliminarLlibreDeLaBaseDeDades(llibreId);
+                                tableModel.removeRow(selectedRow);
+                            }
+                        });
                     }
                 }
             }
@@ -182,17 +193,20 @@ public class LibrosGUI extends JFrame {
             return label;
         }
 
+        // Atura l'edició de la cel·la
         @Override
         public boolean stopCellEditing() {
             isPushed = false;
             return super.stopCellEditing();
         }
 
+        // Finalitza l'edició i actualitza la vista
         @Override
         protected void fireEditingStopped() {
             super.fireEditingStopped();
         }
 
+        // Elimina el llibre de la base de dades
         private void eliminarLlibreDeLaBaseDeDades(int llibreId) {
             try (Connection connection = Connexio.getConnection();
                  PreparedStatement statement = connection.prepareStatement("DELETE FROM Llibres WHERE ID_Llibre = ?")) {

@@ -2,9 +2,9 @@ package Usuaris;
 
 import javax.swing.*;
 
-import Llibres.LibrosGUI;
+import Llibres.LlibresGUI;
 import Prestecs.PrestamosGUI;
-import Usuaris.UsuariosGUI;
+import Usuaris.UsuarisGUI;
 
 import java.awt.*;
 import java.sql.SQLException;
@@ -42,9 +42,7 @@ public class FinestraBibliotecari extends JFrame {
         // Afegim la funcionalitat del botó de Gestió de Llibres
         btnGestioLlibres.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO -> Implementar i probar la funció de la gestió de llibres...
-                System.out.println("Obrint gestió de llibres...");
-                new LibrosGUI(usuari);
+                new LlibresGUI();
             }
         });
         JButton btnGestioPrestecs = new JButton("Gestió de Préstecs");
@@ -53,16 +51,14 @@ public class FinestraBibliotecari extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // TODO -> Implementar i probar la funció de la gestió de préstecs...
                 System.out.println("Obrint gestió de préstecs...");
-                new PrestamosGUI().setVisible(true);
+                //new PrestamosGUI().setVisible(true);
             }
         });
         JButton btnGestioUsuaris = new JButton("Gestió d'Usuaris");
         // Afegim la funcionalitat del botó de Gestió d'Usuaris
         btnGestioUsuaris.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO -> Implementar i probar la funció de la gestió d'Usuaris...
-                System.out.println("Obrint gestió de'Usuaris...");
-                new UsuariosGUI().setVisible(true);
+                new UsuarisGUI();
             }
         });
         centerPanel.add(btnGestioLlibres);
