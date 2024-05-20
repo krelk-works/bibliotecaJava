@@ -36,6 +36,7 @@ public class PrestecsGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Aquí pots afegir la funcionalitat per a afegir un nou préstec
                 //new AfegirPrestec(PrestecsGUI.this).setVisible(true);
+                new NouPrestec(PrestecsGUI.this);
             }
         });
         panel.add(btnAddPrestec, BorderLayout.NORTH);
@@ -133,50 +134,67 @@ public class PrestecsGUI extends JFrame {
         }
     }
 
-    // Classe per editar les cel·les de la taula que contenen botons
-    class ButtonEditor extends DefaultCellEditor {
-        protected JButton button;
-        private String label;
-        private boolean isPushed;
+// Classe per editar les cel·les de la taula que contenen botons
+class ButtonEditor extends DefaultCellEditor {
+    protected JButton button;
+    private String label;
+    private boolean isPushed;
 
-        // Inicialitza el botó i configura l'acció d'escolta
-        public ButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                }
-            });
-        }
-
-        // Retorna el component editor per a la cel·la
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            label = (value == null) ? "" : value.toString();
-            button.setText(label);
-            isPushed = true;
-            return button;
-        }
-
-        // Retorna el valor de l'editor
-        @Override
-        public Object getCellEditorValue() {
-            return label; // De moment no fem res amb el botó
-        }
-
-        // Atura l'edició de la cel·la
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-
-        // Finalitza l'edició i actualitza la vista
-        @Override
-        protected void fireEditingStopped() {
-            super.fireEditingStopped();
-        }
+    // Inicialitza el botó i configura l'acció d'escolta
+    public ButtonEditor(JCheckBox checkBox) {
+        super(checkBox);
+        button = new JButton();
+        button.setOpaque(true);
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fireEditingStopped();
+            }
+        });
     }
+
+    // Retorna el component editor per a la cel·la
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        label = (value == null) ? "" : value.toString();
+        button.setText(label);
+        isPushed = true;
+        return button;
+    }
+
+    // Retorna el valor de l'editor
+    @Override
+    public Object getCellEditorValue() {
+        if (isPushed) {
+            final int selectedRow = table.getSelectedRow();
+            if (selectedRow < 0 || selectedRow >= tableModel.getRowCount()) {
+                isPushed = false;
+                return label;
+            }
+
+            final int prestecId = (int) tableModel.getValueAt(selectedRow, 0);
+            if (label.equals("Devolució")) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new Devolucio(prestecId, PrestecsGUI.this);
+                    }
+                });
+            }
+        }
+        isPushed = false;
+        return label;
+    }
+
+    // Atura l'edició de la cel·la
+    @Override
+    public boolean stopCellEditing() {
+        isPushed = false;
+        return super.stopCellEditing();
+    }
+
+    // Finalitza l'edició i actualitza la vista
+    @Override
+    protected void fireEditingStopped() {
+        super.fireEditingStopped();
+    }
+}
 }
