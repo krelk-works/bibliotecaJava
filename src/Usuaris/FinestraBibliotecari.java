@@ -3,8 +3,8 @@ package Usuaris;
 import javax.swing.*;
 
 import Llibres.LlibresGUI;
-import Prestecs.PrestamosGUI;
 import Usuaris.UsuarisGUI;
+import Prestecs.PrestecsGUI;
 
 import java.awt.*;
 import java.sql.SQLException;
@@ -52,6 +52,7 @@ public class FinestraBibliotecari extends JFrame {
                 // TODO -> Implementar i probar la funció de la gestió de préstecs...
                 System.out.println("Obrint gestió de préstecs...");
                 //new PrestamosGUI().setVisible(true);
+                new PrestecsGUI();
             }
         });
         JButton btnGestioUsuaris = new JButton("Gestió d'Usuaris");
