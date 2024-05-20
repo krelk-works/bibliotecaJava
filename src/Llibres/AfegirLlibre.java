@@ -7,22 +7,19 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import Connexio.Connexio;
 
 public class AfegirLlibre extends JFrame {
     private JTextField txtTitol;
     private JTextField txtAutor;
-    private JTextField txtIsbn;
+    private JTextField txtISBN;
     private JTextField txtEditorial;
     private JTextField txtAnyPublicacio;
     private JTextField txtCategoria;
-    private JTextField txtEstat;
-    private LlibresGUI parent;
+    private JComboBox<String> cmbEstat;
+    private JButton btnAfegir;
 
-    public AfegirLlibre(LlibresGUI parent) {
-        this.parent = parent;
-
+    public AfegirLlibre(LlibresGUI llibresGUI) {
         setTitle("Afegir Llibre");
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -32,7 +29,7 @@ public class AfegirLlibre extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(8, 2, 10, 10));
 
-        // Afegir els components per introduir el nou llibre
+        // Crear i afegir els components
         panel.add(new JLabel("Títol:"));
         txtTitol = new JTextField();
         panel.add(txtTitol);
@@ -42,14 +39,14 @@ public class AfegirLlibre extends JFrame {
         panel.add(txtAutor);
 
         panel.add(new JLabel("ISBN:"));
-        txtIsbn = new JTextField();
-        panel.add(txtIsbn);
+        txtISBN = new JTextField();
+        panel.add(txtISBN);
 
         panel.add(new JLabel("Editorial:"));
         txtEditorial = new JTextField();
         panel.add(txtEditorial);
 
-        panel.add(new JLabel("Any Publicació:"));
+        panel.add(new JLabel("Any de Publicació:"));
         txtAnyPublicacio = new JTextField();
         panel.add(txtAnyPublicacio);
 
@@ -58,46 +55,53 @@ public class AfegirLlibre extends JFrame {
         panel.add(txtCategoria);
 
         panel.add(new JLabel("Estat:"));
-        txtEstat = new JTextField();
-        panel.add(txtEstat);
+        cmbEstat = new JComboBox<>(new String[]{"disponible", "prestat", "en manteniment"});
+        panel.add(cmbEstat);
 
-        // Afegir un panell per centrar el botó
-        JPanel buttonPanel = new JPanel();
-        JButton btnAfegir = new JButton("Afegir");
+        btnAfegir = new JButton("Afegir");
+        panel.add(new JLabel()); // Placeholder
+        panel.add(btnAfegir);
+
+        add(panel);
+
+        // Acció del botó "Afegir"
         btnAfegir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 afegirLlibre();
+                llibresGUI.actualitzarTaulaLlibres();
             }
         });
-        buttonPanel.add(btnAfegir);
 
-        // Afegir el panell del botó al panell principal
-        panel.add(new JLabel()); // Espaiador
-        panel.add(buttonPanel);
-
-        add(panel);
         setVisible(true);
     }
 
+    // Afegir un nou llibre a la base de dades
     private void afegirLlibre() {
+        String titol = txtTitol.getText();
+        String autor = txtAutor.getText();
+        String isbn = txtISBN.getText();
+        String editorial = txtEditorial.getText();
+        int anyPublicacio = Integer.parseInt(txtAnyPublicacio.getText());
+        String categoria = txtCategoria.getText();
+        String estat = (String) cmbEstat.getSelectedItem();
+
         try (Connection connection = Connexio.getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO Llibres (Títol, Autor, ISBN, Editorial, Any_Publicació, Categoria, Estat) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
-            statement.setString(1, txtTitol.getText());
-            statement.setString(2, txtAutor.getText());
-            statement.setString(3, txtIsbn.getText());
-            statement.setString(4, txtEditorial.getText());
-            statement.setInt(5, Integer.parseInt(txtAnyPublicacio.getText()));
-            statement.setString(6, txtCategoria.getText());
-            statement.setString(7, txtEstat.getText());
+                     "INSERT INTO llibres (Títol, Autor, ISBN, Editorial, Any_Publicació, Categoria, Estat) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+            statement.setString(1, titol);
+            statement.setString(2, autor);
+            statement.setString(3, isbn);
+            statement.setString(4, editorial);
+            statement.setInt(5, anyPublicacio);
+            statement.setString(6, categoria);
+            statement.setString(7, estat);
             statement.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Llibre afegit correctament.");
-            parent.actualitzarTaulaLlibres(); // Actualitzar la taula de llibres al parent
+            JOptionPane.showMessageDialog(this, "Llibre afegit correctament!");
             dispose();
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error en afegir el llibre.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error en afegir el llibre", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

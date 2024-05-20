@@ -7,10 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Date;
 import java.util.Calendar;
 
 public class Devolucio extends JFrame {
@@ -116,6 +116,9 @@ public class Devolucio extends JFrame {
             statement.setDate(1, new Date(System.currentTimeMillis()));
             statement.setInt(2, prestecId);
             statement.executeUpdate();
+
+            // Actualitzar l'estat del llibre a 'disponible'
+            updateLlibreEstat(prestecId, "disponible");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -148,9 +151,29 @@ public class Devolucio extends JFrame {
                         updateStatement.executeUpdate();
                     }
 
-                    retornarPrestec(prestecId);
+                    // Actualitzar l'estat del préstec a 'retardat'
+                    PreparedStatement statement_retardat = connection.prepareStatement("UPDATE préstecs SET Data_Retorn_Real = ?, Estat = 'retardat' WHERE ID_Préstec = ?");
+                    statement_retardat.setDate(1, new Date(System.currentTimeMillis()));
+                    statement_retardat.setInt(2, prestecId);
+                    statement_retardat.executeUpdate();
+
+                    // Actualitzar l'estat del llibre a 'disponible'
+                    updateLlibreEstat(prestecId, "disponible");
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Actualitzar l'estat del llibre
+    private void updateLlibreEstat(int prestecId, String estat) {
+        try (Connection connection = Connexio.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "UPDATE llibres SET Estat = ? WHERE ID_Llibre = (SELECT ID_Llibre FROM préstecs WHERE ID_Préstec = ?)")) {
+            statement.setString(1, estat);
+            statement.setInt(2, prestecId);
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

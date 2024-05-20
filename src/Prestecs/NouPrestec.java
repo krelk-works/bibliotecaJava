@@ -80,7 +80,7 @@ public class NouPrestec extends JFrame {
     private String[] getLlibresDisponibles() {
         List<String> llibres = new ArrayList<>();
         try (Connection connection = Connexio.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT ID_Llibre, Títol FROM llibres WHERE Estat = 'Disponible' AND ID_Llibre NOT IN (SELECT ID_Llibre FROM préstecs WHERE Estat = 'actiu')");
+             PreparedStatement statement = connection.prepareStatement("SELECT ID_Llibre, Títol FROM llibres WHERE Estat = 'disponible' AND ID_Llibre NOT IN (SELECT ID_Llibre FROM préstecs WHERE Estat = 'actiu')");
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -145,12 +145,18 @@ public class NouPrestec extends JFrame {
             Date dataRetornPrevista = new Date(System.currentTimeMillis() + (diesSeleccionats * 86400000L)); // 86400000 ms = 1 dia
 
             try (Connection connection = Connexio.getConnection();
-                 PreparedStatement statement = connection.prepareStatement("INSERT INTO préstecs (ID_Usuari, ID_Llibre, Data_Préstec, Data_Retorn_Prevista, Data_Retorn_Real, Estat) VALUES (?, ?, ?, ?, NULL, 'actiu')")) {
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO préstecs (ID_Usuari, ID_Llibre, Data_Préstec, Data_Retorn_Prevista, Data_Retorn_Real, Estat) VALUES (?, ?, ?, ?, NULL, 'actiu')")) {
                 statement.setInt(1, idLector);
                 statement.setInt(2, idLlibre);
                 statement.setDate(3, dataPrestec);
                 statement.setDate(4, dataRetornPrevista);
                 statement.executeUpdate();
+
+                // Actualitzem també el nou estat del llibre a 'prestat'
+                PreparedStatement statement_llibre = connection.prepareStatement("UPDATE llibres SET Estat = 'prestat' WHERE ID_Llibre = ?");
+                statement_llibre.setInt(1, idLlibre);
+                statement_llibre.executeUpdate();
+
                 JOptionPane.showMessageDialog(this, "S'ha afegit el préstec correctament");
             } catch (SQLException e) {
                 e.printStackTrace();

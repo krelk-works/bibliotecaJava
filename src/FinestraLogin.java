@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import Connexio.Connexio;
 import Usuaris.FinestraBibliotecari;
+import Usuaris.FinestraLector;
 import Usuaris.Usuari;
 
 public class FinestraLogin extends JFrame {
@@ -38,7 +39,7 @@ public class FinestraLogin extends JFrame {
         JLabel lblImage = new JLabel();
         lblImage.setHorizontalAlignment(JLabel.CENTER);
         String fileSeparator = System.getProperty("file.separator");
-        ImageIcon icon = new ImageIcon(getClass().getResource("media"+fileSeparator+"cancasacuberta.jpg"));
+        ImageIcon icon = new ImageIcon(getClass().getResource("media" + fileSeparator + "cancasacuberta.jpg"));
 
         // Escalat de la imatge per a que s'adapti a la finestra
         Image image = icon.getImage().getScaledInstance((int)(getWidth() * 0.98), (int)(getHeight() * 0.5), Image.SCALE_SMOOTH);
@@ -142,9 +143,6 @@ public class FinestraLogin extends JFrame {
             String rol = resultSet.getString("Rol");
             if (rol.equals("bibliotecari")) {
                 // Obrir interficie de bibliotecari
-
-
-
                 Usuari usuari = new Usuari(
                     resultSet.getInt("ID_Usuari"),
                     resultSet.getString("Nom"),
@@ -158,6 +156,16 @@ public class FinestraLogin extends JFrame {
                 System.out.println("Bibliotecari obrint finestra...");
             } else {
                 // Obrir interficie de lector
+                Usuari usuari = new Usuari(
+                    resultSet.getInt("ID_Usuari"),
+                    resultSet.getString("Nom"),
+                    resultSet.getString("Cognoms"),
+                    resultSet.getString("Email"),
+                    resultSet.getString("Telèfon"),
+                    resultSet.getString("Rol"),
+                    resultSet.getDate("Data_Registre")
+                );
+                new FinestraLector(usuari);
                 System.out.println("Lector obrint finestra...");
             }
 
