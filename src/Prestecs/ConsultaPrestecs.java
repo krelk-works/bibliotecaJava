@@ -69,11 +69,13 @@ public class ConsultaPrestecs extends JFrame {
     private void omplirTaulaPrestecs() {
         tableModel.setRowCount(0); // Esborrar les files existents
         try (Connection connection = Connexio.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "SELECT l.Títol, l.Autor, l.Editorial, l.Categoria, p.Data_Préstec, p.Data_Retorn_Prevista, p.Data_Retorn_Real " +
-                             "FROM llibres l " +
-                             "INNER JOIN préstecs p ON l.ID_Llibre = p.ID_Llibre " +
-                             "WHERE p.ID_Usuari = ?")) {
+            PreparedStatement statement = connection.prepareStatement(
+                "SELECT l.Títol, l.Autor, l.Editorial, l.Categoria, p.Data_Préstec, p.Data_Retorn_Prevista, p.Data_Retorn_Real " +
+                "FROM llibres l " +
+                "INNER JOIN préstecs p ON l.ID_Llibre = p.ID_Llibre " +
+                "WHERE p.ID_Usuari = ?"))
+            {
+            // Jorge debería estar orgulloso xd
             statement.setInt(1, usuari.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
 
