@@ -57,6 +57,8 @@ public class PrestecsGUI extends JFrame {
                 // Condicions per pintar la columna de Data Retorn Prevista de vermell
                 if (column == 6 && ((dataRetornReal == null && new Date().after(dataRetornPrevista)) || (dataRetornReal != null && dataRetornReal.after(dataRetornPrevista)))) {
                     c.setForeground(Color.RED);
+                } else if ( column == 7 && dataRetornReal != null && !dataRetornReal.after(dataRetornPrevista)) {
+                    c.setForeground(Color.GREEN);
                 } else {
                     c.setForeground(Color.BLACK);
                 }

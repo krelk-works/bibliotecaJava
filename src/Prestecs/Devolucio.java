@@ -11,8 +11,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.util.Calendar;
 
 public class Devolucio extends JFrame {
+    @SuppressWarnings("unused")
     private int prestecId;
     private JLabel sancioLabel;
     private JComboBox<Integer> sancioComboBox;
@@ -73,7 +75,6 @@ public class Devolucio extends JFrame {
                     Date dataRetornReal = resultSet.getDate("Data_Retorn_Real");
                     if (dataRetornReal != null) {
                         devolucioFeta = true;
-                        
                     }
                 }
             }
@@ -124,20 +125,35 @@ public class Devolucio extends JFrame {
     private void sancionarUsuari(int prestecId, int diesSancio) {
         try (Connection connection = Connexio.getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "SELECT u.Nom, u.Cognoms FROM usuaris u INNER JOIN préstecs p ON p.ID_Usuari = u.ID_Usuari WHERE p.ID_Préstec = ?")) {
+                     "SELECT u.ID_Usuari, u.Nom, u.Cognoms FROM usuaris u INNER JOIN préstecs p ON p.ID_Usuari = u.ID_Usuari WHERE p.ID_Préstec = ? AND u.Rol = 'lector'")) {
             statement.setInt(1, prestecId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
+                    int usuariId = resultSet.getInt("ID_Usuari");
                     String nom = resultSet.getString("Nom");
                     String cognoms = resultSet.getString("Cognoms");
+
+                    // Mostrar missatge de sanció
                     System.out.println("S'ha sancionat a " + nom + " " + cognoms + " amb " + diesSancio + " dies de inhabilitació dels serveis de la biblioteca.");
+
+                    // Actualitzar la data de sanció
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_YEAR, diesSancio);
+                    Date sancioFins = new Date(calendar.getTimeInMillis());
+
+                    try (PreparedStatement updateStatement = connection.prepareStatement(
+                            "UPDATE usuaris SET Sancio_Fins = ? WHERE ID_Usuari = ?")) {
+                        updateStatement.setDate(1, sancioFins);
+                        updateStatement.setInt(2, usuariId);
+                        updateStatement.executeUpdate();
+                    }
+
                     retornarPrestec(prestecId);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        retornarPrestec(prestecId);
     }
 
     // Crear un array de nombres de dies (15-30)
