@@ -1,4 +1,4 @@
-package Usuaris;
+package biblioteca.Usuaris;
 
 import java.sql.Date;
 

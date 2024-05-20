@@ -1,4 +1,4 @@
-package Llibres;
+package biblioteca.Llibres;
 
 public class Llibre {
     private int id = 0;
