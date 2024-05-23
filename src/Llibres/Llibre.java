@@ -31,6 +31,7 @@ public class Llibre {
         this.anyPublicacio = anyPublicacio;
         this.categoria = categoria;
         this.estat = estat;
+        /*  esto se muesta por consola 
         if (isValidTitol(titol)) {
             this.titol = titol;
         } else {
@@ -72,6 +73,7 @@ public class Llibre {
         } else {
             throw new IllegalArgumentException("Estat no vàlid");
         }
+        */
     }
 
     public int getId() {
@@ -105,38 +107,6 @@ public class Llibre {
     public String getEstat() {
         return this.estat;
     }
-
-    // Validació de Llibres
-    private boolean isValidTitol(String titol) {
-        return titol != null && !titol.trim().isEmpty();
-    }
-
-    private boolean isValidAutor(String autor) {
-        return autor != null && !autor.trim().isEmpty();
-    }
-
-    private boolean isValidIsbn(String isbn) {
-        String isbnRegex = "^(97(8|9))?\\d{9}(\\d|X)$";
-        return isbn != null && isbn.matches(isbnRegex);
-    }
-
-    private boolean isValidEditorial(String editorial) {
-        return editorial != null && !editorial.trim().isEmpty();
-    }
-
-    private boolean isValidAnyPublicacio(int anyPublicacio) {
-        int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
-        return anyPublicacio > 0 && anyPublicacio <= currentYear;
-    }
-
-    private boolean isValidCategoria(String categoria) {
-        return categoria != null && !categoria.trim().isEmpty();
-    }
-
-    private boolean isValidEstat(String estat) {
-        return estat != null && !estat.trim().isEmpty();
-    }
-
     // De moment els Setters no són necessaris, ja que no tenim cap funció que modifiqui les dades del llibre
 
     /*

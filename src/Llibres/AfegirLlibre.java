@@ -101,6 +101,16 @@ public class AfegirLlibre extends JFrame {
                 JOptionPane.showMessageDialog(this, "El titol no es valid");
             } else if(!isValidAutor(autor)) {
                 JOptionPane.showMessageDialog(this, "El autor no es valid");
+            } else if(!isValidIsbn(isbn)) {
+                JOptionPane.showMessageDialog(this, "El isbn del llibre no es valid");
+            } else if(!isValidEditorial(editorial)) {
+                JOptionPane.showMessageDialog(this, "L'editorial no es correcte");
+            } else if(!isValidAnyPublicacio(anyPublicacio)) {
+                JOptionPane.showMessageDialog(this, "L'any de publicació no es valid");
+            } else if(!isValidCategoria(categoria)) {
+                JOptionPane.showMessageDialog(this, "La categoria no es valida");
+            } else if(!isValidEstat(estat)) {
+                JOptionPane.showMessageDialog(this, "L'estat del llibre no es valid");
             } else {
                 statement.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Llibre afegit correctament!");
@@ -114,11 +124,34 @@ public class AfegirLlibre extends JFrame {
     }
 
 
-    private boolean isValidTitol(String titol) {
-        return titol != null && !titol.trim().isEmpty();
-    }
-
-    private boolean isValidAutor(String autor) {
-        return autor != null && !autor.trim().isEmpty();
-    }
+        // Validació de Llibres
+        private boolean isValidTitol(String titol) {
+            return titol != null && !titol.trim().isEmpty();
+        }
+    
+        private boolean isValidAutor(String autor) {
+            return autor != null && !autor.trim().isEmpty();
+        }
+    
+        private boolean isValidIsbn(String isbn) {
+            String isbnRegex = "^(97(8|9))?\\d{9}(\\d|X)$";
+            return isbn != null && isbn.matches(isbnRegex);
+        }
+    
+        private boolean isValidEditorial(String editorial) {
+            return editorial != null && !editorial.trim().isEmpty();
+        }
+    
+        private boolean isValidAnyPublicacio(int anyPublicacio) {
+            int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+            return anyPublicacio > 0 && anyPublicacio <= currentYear;
+        }
+    
+        private boolean isValidCategoria(String categoria) {
+            return categoria != null && !categoria.trim().isEmpty();
+        }
+    
+        private boolean isValidEstat(String estat) {
+            return estat != null && !estat.trim().isEmpty();
+        }
 }
