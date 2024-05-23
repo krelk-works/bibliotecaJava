@@ -1,7 +1,5 @@
 package Llibres;
 
-import java.util.regex.Pattern;
-
 public class Llibre {
     private int id = 0;
     private String titol;

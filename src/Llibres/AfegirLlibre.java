@@ -96,12 +96,29 @@ public class AfegirLlibre extends JFrame {
             statement.setInt(5, anyPublicacio);
             statement.setString(6, categoria);
             statement.setString(7, estat);
-            statement.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Llibre afegit correctament!");
-            dispose();
+
+            if (!isValidTitol(titol)) {
+                JOptionPane.showMessageDialog(this, "El titol no es valid");
+            } else if(!isValidAutor(autor)) {
+                JOptionPane.showMessageDialog(this, "El autor no es valid");
+            } else {
+                statement.executeUpdate();
+                JOptionPane.showMessageDialog(this, "Llibre afegit correctament!");
+                dispose();
+            }
+            
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error en afegir el llibre", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+
+    private boolean isValidTitol(String titol) {
+        return titol != null && !titol.trim().isEmpty();
+    }
+
+    private boolean isValidAutor(String autor) {
+        return autor != null && !autor.trim().isEmpty();
     }
 }

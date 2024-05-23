@@ -3,6 +3,7 @@ package Usuaris;
 import java.sql.Date;
 import org.mindrot.jbcrypt.BCrypt;
 import java.util.regex.Pattern;
+import java.security.*;
 
 public class Usuari {
     private int id;
