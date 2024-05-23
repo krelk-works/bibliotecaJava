@@ -1,6 +1,7 @@
 package Usuaris;
 
 import java.sql.Date;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class Usuari {
     private int id;
@@ -82,6 +83,13 @@ public class Usuari {
 
     public Date getDataRegistre() {
         return this.dataRegistre;
+    }
+    public void setContrasenya(String contrasenya) {
+        this.contrasenya = BCrypt.hashpw(contrasenya, BCrypt.gensalt());
+    }
+  
+    public boolean checkContrasenya(String contrasenya) {
+        return BCrypt.checkpw(contrasenya, this.contrasenya);
     }
 
     // Deshabilitem els setters perquè de moment no tenim codi que els necessiti. Els deixem creats per si en un futur són necessaris.
