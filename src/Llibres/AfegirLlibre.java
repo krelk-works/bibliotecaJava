@@ -97,7 +97,7 @@ public class AfegirLlibre extends JFrame {
             statement.setString(6, categoria);
             statement.setString(7, estat);
 
-            if (!isValidTitol(titol)) {
+            /*if (!isValidTitol(titol)) {
                 JOptionPane.showMessageDialog(this, "El titol no es valid");
             } else if(!isValidAutor(autor)) {
                 JOptionPane.showMessageDialog(this, "El autor no es valid");
@@ -111,11 +111,11 @@ public class AfegirLlibre extends JFrame {
                 JOptionPane.showMessageDialog(this, "La categoria no es valida");
             } else if(!isValidEstat(estat)) {
                 JOptionPane.showMessageDialog(this, "L'estat del llibre no es valid");
-            } else {
+            } else {*/
                 statement.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Llibre afegit correctament!");
                 dispose();
-            }
+            //}
             
         } catch (SQLException e) {
             e.printStackTrace();

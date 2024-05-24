@@ -131,7 +131,7 @@ public class EditarLlibre extends JFrame {
             JOptionPane.showMessageDialog(this, "Llibre actualitzat correctament!");
             dispose();
 
-            if (!isValidTitol(titol)) {
+            /*if (!isValidTitol(titol)) {
                 JOptionPane.showMessageDialog(this, "El titol no es valid");
             } else if(!isValidAutor(autor)) {
                 JOptionPane.showMessageDialog(this, "El autor no es valid");
@@ -145,11 +145,11 @@ public class EditarLlibre extends JFrame {
                 JOptionPane.showMessageDialog(this, "La categoria no es valida");
             } else if(!isValidEstat(estat)) {
                 JOptionPane.showMessageDialog(this, "L'estat del llibre no es valid");
-            } else {
+            } else {*/
                 statement.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Llibre actualitzat correctament!");
                 dispose();
-            }
+            //}
 
         } catch (SQLException e) {
             e.printStackTrace();

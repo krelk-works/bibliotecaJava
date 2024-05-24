@@ -106,6 +106,8 @@ public class FinestraLogin extends JFrame {
                     
                     //Comentem l'excepció perquè no ens interessa mostrar-la per pantalla
                     //ex.printStackTrace();
+                    
+                    JOptionPane.showMessageDialog(FinestraLogin.this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
