@@ -109,7 +109,7 @@ public class EditarUsuari extends JFrame {
     private void actualitzarUsuari() {
         try (Connection connection = Connexio.getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "UPDATE Usuaris SET Nom = ?, Cognoms = ?, Email = ?, Telèfon = ?, Rol = ?, Contrasenya = ? WHERE ID_Usuari = ?")) {
+                     "UPDATE usuaris SET Nom = ?, Cognoms = ?, Email = ?, Telèfon = ?, Rol = ?, Contrasenya = ? WHERE ID_Usuari = ?")) {
             statement.setString(1, txtNom.getText());
             statement.setString(2, txtCognoms.getText());
             statement.setString(3, txtEmail.getText());

@@ -77,7 +77,7 @@ public class AfegirUsuari extends JFrame {
     private void afegirUsuari() {
         try (Connection connection = Connexio.getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO Usuaris (Nom, Cognoms, Email, Telèfon, Rol, Contrasenya) VALUES (?, ?, ?, ?, ?, ?)")) {
+                     "INSERT INTO usuaris (Nom, Cognoms, Email, Telèfon, Rol, Contrasenya) VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, txtNom.getText());
             statement.setString(2, txtCognoms.getText());
             statement.setString(3, txtEmail.getText());

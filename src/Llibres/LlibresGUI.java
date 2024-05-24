@@ -209,7 +209,7 @@ public class LlibresGUI extends JFrame {
         // Elimina el llibre de la base de dades
         private void eliminarLlibreDeLaBaseDeDades(int llibreId) {
             try (Connection connection = Connexio.getConnection();
-                PreparedStatement statement = connection.prepareStatement("DELETE FROM Llibres WHERE ID_Llibre = ?")) {
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM llibres WHERE ID_Llibre = ?")) {
                 statement.setInt(1, llibreId);
                 statement.executeUpdate();
             } catch (SQLException e) {

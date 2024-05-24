@@ -208,7 +208,7 @@ public class UsuarisGUI extends JFrame {
         // Elimina l'usuari de la base de dades
         private void eliminarUsuariDeLaBaseDeDades(int usuariId) {
             try (Connection connection = Connexio.getConnection();
-                 PreparedStatement statement = connection.prepareStatement("DELETE FROM Usuaris WHERE ID_Usuari = ?")) {
+                 PreparedStatement statement = connection.prepareStatement("DELETE FROM usuaris WHERE ID_Usuari = ?")) {
                 statement.setInt(1, usuariId);
                 statement.executeUpdate();
             } catch (SQLException e) {
