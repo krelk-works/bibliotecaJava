@@ -125,7 +125,7 @@ INSERT INTO `préstecs` (`ID_Préstec`, `ID_Llibre`, `ID_Usuari`, `Data_Préstec
 
 -- --------------------------------------------------------
 
---
+-- INSERT INTO `préstecs` (`ID_Préstec`, `ID_Llibre`, `ID_Usuari`, `Data_Préstec`, `Data_Retorn_Prevista`, `Data_Retorn_Real`, `Estat`) VALUES (26, 1, 6, '2024-05-15', '2024-05-23', NULL, 'actiu');
 -- Estructura de tabla para la tabla `usuaris`
 --
 

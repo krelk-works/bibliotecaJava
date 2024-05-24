@@ -125,7 +125,7 @@ public class AfegirLlibre extends JFrame {
 
 
         // Validació de Llibres
-        private boolean isValidTitol(String titol) {
+        /*private boolean isValidTitol(String titol) {
             return titol != null && !titol.trim().isEmpty();
         }
     
@@ -153,5 +153,5 @@ public class AfegirLlibre extends JFrame {
     
         private boolean isValidEstat(String estat) {
             return estat != null && !estat.trim().isEmpty();
-        }
+        }*/
 }
