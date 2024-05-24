@@ -88,7 +88,7 @@ public class LlibresGUI extends JFrame {
     private List<Llibre> obtenirLlibresDeLaBaseDeDades() {
         List<Llibre> llibres = new ArrayList<>();
         try (Connection connection = Connexio.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Llibres ORDER BY Títol ASC");
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM llibres ORDER BY Títol ASC");
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {

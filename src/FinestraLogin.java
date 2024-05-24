@@ -126,7 +126,7 @@ public class FinestraLogin extends JFrame {
         Connection connection = Connexio.getConnection();
 
         // Preparem la consulta SQL per a comprovar si l'usuari existeix
-        String query = "SELECT * FROM Usuaris WHERE Email = ? AND Contrasenya = ? LIMIT 1";
+        String query = "SELECT * FROM usuaris WHERE Email = ? AND Contrasenya = ? LIMIT 1";
         PreparedStatement statement = connection.prepareStatement(query);
 
         // Afegim els parametres a la consulta

@@ -1,9 +1,6 @@
 package Usuaris;
 
 import java.sql.Date;
-import org.mindrot.jbcrypt.BCrypt;
-import java.util.regex.Pattern;
-import java.security.*;
 
 public class Usuari {
     private int id;
@@ -86,48 +83,7 @@ public class Usuari {
     public Date getDataRegistre() {
         return this.dataRegistre;
     }
-    public void setContrasenya(String contrasenya) {
-        this.contrasenya = BCrypt.hashpw(contrasenya, BCrypt.gensalt());
-    }
-  
-    public boolean checkContrasenya(String contrasenya) {
-        return BCrypt.checkpw(contrasenya, this.contrasenya);
-    }
 
-    // Validacion de los usuarios
-
-    public boolean isValid() {
-        return isValidNom(this.nom) && isValidCognoms(this.cognoms) && isValidEmail(this.email) &&
-               isValidTelefon(this.telefon) && isValidRol(this.rol) && isValidContrasenya(this.contrasenya);
-    }
-
-    private boolean isValidNom(String nom) {
-        return nom != null && !nom.trim().isEmpty();
-    }
-
-    private boolean isValidCognoms(String cognoms) {
-        return cognoms != null && !cognoms.trim().isEmpty();
-    }
-
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-        Pattern pat = Pattern.compile(emailRegex);
-        return email != null && pat.matcher(email).matches();
-    }
-
-    private boolean isValidTelefon(String telefon) {
-        String telefonRegex = "^\\d{10}$";
-        Pattern pat = Pattern.compile(telefonRegex);
-        return telefon != null && pat.matcher(telefon).matches();
-    }
-
-    private boolean isValidRol(String rol) {
-        return rol != null && !rol.trim().isEmpty();
-    }
-
-    private boolean isValidContrasenya(String contrasenya) {
-        return contrasenya != null && contrasenya.length() >= 8;
-    }
     // Deshabilitem els setters perquè de moment no tenim codi que els necessiti. Els deixem creats per si en un futur són necessaris.
     /*
     public void setId(int id) {

@@ -87,7 +87,7 @@ public class UsuarisGUI extends JFrame {
     private List<Usuari> obtenirUsuarisDeLaBaseDeDades() {
         List<Usuari> usuaris = new ArrayList<>();
         try (Connection connection = Connexio.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Usuaris ORDER BY Nom ASC");
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM usuaris ORDER BY Nom ASC");
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {

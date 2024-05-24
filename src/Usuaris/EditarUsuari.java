@@ -84,7 +84,7 @@ public class EditarUsuari extends JFrame {
     private Usuari obtenirUsuariDeLaBaseDeDades(int usuariId) {
         Usuari usuari = null;
         try (Connection connection = Connexio.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Usuaris WHERE ID_Usuari = ?")) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM usuaris WHERE ID_Usuari = ?")) {
             statement.setInt(1, usuariId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
